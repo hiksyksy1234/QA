@@ -1,0 +1,19 @@
+1. application.properties
+   my.savepath=file:///C:/upload/
+   my.savefolder=C:/upload/
+
+2. WebMvcConfig.java를 루트 directory에 만들기
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer{
+  @Value("${my.savepath}")
+	private String savepath;
+
+@Override
+	  public void addResourceHandlers(ResourceHandlerRegistry registry) {     
+	        registry.addResourceHandler("/upload/**").addResourceLocations( savepath  ); 	  
+	  }
+   } 
+
+3. img 태그에서 사용법
+   (1) <img th:src="|upload${filename}|" >
+   (2) <img th:src="|upload${##authentication.principal.filename}|" >
