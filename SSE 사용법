@@ -24,16 +24,20 @@ public class SseController {
 
 
 # SseService.java
-@Service
-public class SseService {
-	
-	private AlarmMapper dao;
-	
-	public SseService(AlarmMapper dao) {
-		this.dao = dao;
-	}
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+public interface SseService {
+	
+    public SseEmitter createEmitter(String userId) ;
 
+    //특정 사용자에게 알림을 보내는 메서드입니다.
+    public void sendNotification(String userId, String message) ; 
+
+	public int update(String name) ;
+	
+}
+
+#SseServiceImple.java
 private static final Logger logger   = LoggerFactory.getLogger(SseService.class);	
 	
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
@@ -66,7 +70,7 @@ private static final Logger logger   = LoggerFactory.getLogger(SseService.class)
         		emitter.send(SseEmitter.event().name("notification").data(""));
         	}else {
         	  for(String message : list)
-                  emitter.send(SseEmitter.event().name("notification").data(message));
+                       emitter.send(SseEmitter.event().name("notification").data(message));
         	}
         } catch (IOException e) {
         	//전송 중 예외가 발생하면(IOException), 해당 emitter를 에러 상태로 완료합니다.
