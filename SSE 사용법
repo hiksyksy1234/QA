@@ -1,8 +1,12 @@
 # header.html
 1. let eventSource = new EventSource("../sse"); //http://localhost:9900/myhome9/sse
 
-2.  eventSource.addEventListener('notification',  function(event) { 
+2. let count=0; 
+   eventSource.addEventListener('notification',  function(event) { 
      console.log(event.data);
+     if(event.data != ''){
+	    count++;
+     }
    });
 
 
