@@ -1,0 +1,58 @@
+<p>인증정보 가져오기1 ( sec:authentication="principal.auth")</p>
+<table class="table table-bordered">
+			<tr>
+				<td>아이디</td>
+				<td><span sec:authentication="name">사용자이름: </span></td>
+			</tr>
+<tr>
+				<td>성별</td>
+				<td><span sec:authentication="principal.gender">성별</span></td>
+			</tr>
+			<tr>
+				<td>나이</td>
+				<td><span sec:authentication="principal.age">나이</span></td>
+			</tr>
+			<tr>
+				<td>이름</td>
+				<td><span sec:authentication="principal.name">이름</span></td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td><span sec:authentication="principal.email">email</span></td>
+			</tr>
+		</table>
+==================================================================================
+<p>인증정보 가져오기2 (th:text="${#authentication.principal.id}")</p>
+		<table class="table table-bordered">
+			<tr>
+				<td>아이디</td>
+				<td><span th:text="${#authentication.principal.id}">사용자
+						이름(Principal): </span></td>
+			</tr>
+			<tr>
+				<td>권한1</td>
+				<td><span th:text="${#authentication.principal.authorities}">사용자
+						권한: </span></td>
+			</tr>
+			<tr>
+				<td>권한2</td>
+				<td><span th:text="${#authentication.principal.auth}">사용자
+						권한: </span></td>
+			</tr>
+			<tr>
+				<td>성별</td>
+				<td><span th:text="${#authentication.principal.gender}">성별</span></td>
+			</tr>
+			<tr>
+				<td>나이</td>
+				<td><span th:text="${#authentication.principal.age}">나이</span></td>
+			</tr>
+			<tr>
+				<td>이름</td>
+				<td><span th:text="${#authentication.principal.name}">나이</span></td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td><span th:text="${#authentication.principal.email}">email</span></td>
+			</tr>
+		</table>
