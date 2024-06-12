@@ -9,6 +9,46 @@
      }
    });
 
+ var eventSource = new EventSource("../sse"); //http://localhost:9900/myhome9/sse
+
+let output='';
+let count=0;
+$(".alarm2").hide();
+eventSource.addEventListener('notification',  function(event) {
+	 if(event.data != ''){
+	    count++;
+		 if(event.data.indexOf("님 회원가입") != -1){
+    	output += '<a class="dropdown-item" href="../member/list">' + event.data + '</a>'
+	    $(".alarm2 img").attr('src', "../image/alarm2.png");
+    	
+    	
+		 }else if(event.data.indexOf("일정") != -1){
+			 output += '<a class="dropdown-item" href="../cal/fifth">' + event.data + '</a>'
+			    $(".alarm2 img").attr('src', "../image/alarm2.png");
+			 if(location.pathname.indexOf("/cal/fifth") != -1)
+				  getList();//fifth.html의 함수가 정의되어있습니다.
+		 }
+		 
+		 $(".alarm2.dropdown .dropdown-menu").html(output);   
+	        $("#alarmCount").text(count);
+	        $(".alarm0").hide();
+	        $(".alarm2").show();
+	 }
+    
+});
+
+$(".alarm2 .dropdown-menu").click(function(){
+	$.ajax({
+		url : "../alarm_isRead",
+		success : function(){
+			$("#alarmCount").text('0');
+			$(".alarm0 img").attr('src', "../image/alarm0.png");
+			 $(".alarm0").show();
+			  $(".alarm2").hide();
+		}
+	})
+	
+})
 
 # SseController.java
 @RestController
