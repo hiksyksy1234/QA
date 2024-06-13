@@ -1,3 +1,2 @@
-UsernamePasswordAuthenticationToken authentication =
-		            new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
+SecurityContextHolder.getContext().setAuthentication(authentication);
