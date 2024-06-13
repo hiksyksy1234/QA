@@ -1,0 +1,88 @@
+ <!--  EC2 연결 -->
+	    <dependency>
+    <groupId>com.github.mwiede</groupId>
+    <artifactId>jsch</artifactId>
+    <version>0.2.16</version>
+
+@Service
+public class SSHService {
+
+    @Value("${ec2.username}")
+    private String username;
+
+    @Value("${ec2.host}")
+    private String host;
+
+    @Value("${ec2.port}")
+    private int port;
+
+    @Value("${ec2.privateKey}")
+    private String privateKey; //EC2 개인키가 있는 위치
+
+    public String executeCommand(String command) {
+        Session session = null;
+        ChannelExec channel = null;
+        try {
+            JSch jsch = new JSch();
+            jsch.addIdentity(privateKey);
+           
+            session = jsch.getSession(username, host, port);
+            session.setConfig("StrictHostKeyChecking", "no");
+          
+            session.connect();
+
+            channel = (ChannelExec) session.openChannel("exec");
+            channel.setCommand(command);
+
+            InputStream in = channel.getInputStream();
+            channel.connect();
+
+            StringBuilder outputBuffer = new StringBuilder();
+            int readByte = in.read();
+            while (readByte != 0xffffffff) {
+                outputBuffer.append((char) readByte);
+                readByte = in.read();
+            }
+
+            return outputBuffer.toString();
+
+        } catch (JSchException | IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (channel != null && channel.isConnected()) {
+                channel.disconnect();
+            }
+            if (session != null && session.isConnected()) {
+                session.disconnect();
+            }
+        }
+    }
+}
+
+
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.naver.myhome4.service.SSHService;
+@RestController
+@RequestMapping("/ssh")
+public class SSHController {
+
+    @Autowired
+    private SSHService sshService;
+
+    @GetMapping("/execute")
+    public String executeCommand(@RequestParam String command) {
+        return sshService.executeCommand(command);
+    }
+}
+
+
+
+브라우저 접속:  http://localhost:9900/myhome9/ssh/execute?command=pwd
+/home/ec2-user
