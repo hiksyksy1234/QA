@@ -8,13 +8,13 @@
 public class SSHService {
 
     @Value("${ec2.username}")
-    private String username;
+    private String username;  //ec2-user or ubuntu
 
     @Value("${ec2.host}")
-    private String host;
+    private String host; //EC2 IP address
 
     @Value("${ec2.port}")
-    private int port;
+    private int port;  //22
 
     @Value("${ec2.privateKey}")
     private String privateKey; //EC2 개인키가 있는 위치
