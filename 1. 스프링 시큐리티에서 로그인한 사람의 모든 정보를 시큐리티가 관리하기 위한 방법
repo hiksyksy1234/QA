@@ -1,0 +1,223 @@
+* Member.java를 기준으로 작성합니다.
+1. Member.java 수정
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+public class Member implements UserDetails{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String  id      ;  
+	
+	private String  password;  
+	private String  name    ;  
+	private int     age     ;   
+	private String  gender  ; 
+	private String  email   ;
+
+	private String auth="ROLE_MEMBER";
+	private boolean enabled;
+	
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	public String getAuth() {
+		return auth;
+	}
+	public void setAuth(String auth) {
+		this.auth = auth;
+	}
+	public boolean getEnabled() {
+		return enabled;
+	}
+	
+	@Override
+	public String toString() {
+		return "Member [id=" + id + ", password=" + password + ", name=" + name + ", age=" + age + ", gender=" + gender
+				+ ", email=" + email + ", auth=" + auth + ", enabled=" + isEnabled() + "]";
+		
+	}
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	//계정이 갖고 있는 권한 목록을 리턴합니다.
+		@Override
+		   public Collection<? extends GrantedAuthority> getAuthorities() {
+		      ArrayList<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+		      list.add(new SimpleGrantedAuthority(this.getAuth()));
+		      System.out.println(this.getAuth());
+		      return list;
+		   }
+		
+		//계정의 아이디를 리턴합니다.
+		@Override
+		public String getUsername() {
+			return id;
+		}
+		
+		//계정이 만료되지 않았는지를 리턴합니다. (true:만료되지 않음)
+		 @Override
+	     public boolean isAccountNonExpired() {
+	        return true; //false인 경우 : 사용자 계정의 유효 기간이 만료 되었습니다.
+	     }
+	     
+		 
+		 //계정이 잠겨있지 않은지 리턴합니다. (true:잠겨있지 않음)
+	     @Override
+	     public boolean isAccountNonLocked() {
+	        return true;  //false인 경우 : 사용자 계정이 잠겨 있습니다.
+	     }
+	     
+	     
+	     //계정의 패스워드가 만료되지 않았는지 리턴합니다.(true:만료되지 않음)
+	     @Override
+	     public boolean isCredentialsNonExpired() {
+	        return true; //false인 경우 : 자격 증명 유효 기간이 만료되었습니다
+	     }
+	     
+	     //계정이 사용가능한지를 리턴합니다.(true:사용가능)
+	     @Override
+	     public boolean isEnabled() {
+	        return true; //false인 경우 :유효하지 않은 사용자입니다.
+	     }
+		-----------------------------------------------------------------
+  2. CustomUserDetailsService.java 수정
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		logger.info("username은 로그인시 입력한 값 : " + username );
+    	Member user = dao.isId(username);
+       if (user==null) {
+    	   logger.info("username " + username + " not found");
+    	   
+    	  throw new UsernameNotFoundException("username " + username + " not found");
+    	  
+       }
+
+       return user;
+    }
+
+    ----------------------------------------------------------------------------
+    3. 컨트롤러에서 인증 정보를 가져오기 위한 방법
+    import org.springframework.security.core.annotation.AuthenticationPrincipal;
+    public String home(@AuthenticationPrincipal Member userDetails)
+  ------------------------------------------------------------------------------
+   4. 타임리프에서 적용하기
+   
+    <body>
+	<div class="container">
+
+
+		<p>인증정보 가져오기1 ( sec:authentication="principal.auth")</p>
+
+		<table class="table table-bordered">
+			<tr>
+				<td>아이디</td>
+				<td><span sec:authentication="name">사용자이름: </span></td>
+			</tr>
+			<tr>
+				<td>아이디</td>
+				<td><span sec:authentication="principal.username">사용자
+						이름(Principal): </span></td>
+			</tr>
+			<tr>
+				<td>권한1</td>
+				<td><span sec:authentication="authorities">사용자 권한: </span></td>
+			</tr>
+			<tr>
+				<td>권한2</td>
+				<td><span sec:authentication="principal.auth">사용자 권한: </span></td>
+			</tr>
+			<tr>
+				<td>성별</td>
+				<td><span sec:authentication="principal.gender">성별</span></td>
+			</tr>
+			<tr>
+				<td>나이</td>
+				<td><span sec:authentication="principal.age">나이</span></td>
+			</tr>
+			<tr>
+				<td>이름</td>
+				<td><span sec:authentication="principal.name">이름</span></td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td><span sec:authentication="principal.email">email</span></td>
+			</tr>
+		</table>
+		<p>인증정보 가져오기2 (th:text="${#authentication.principal.id}")</p>
+		<table class="table table-bordered">
+			<tr>
+				<td>아이디</td>
+				<td><span th:text="${#authentication.principal.id}">사용자
+						이름(Principal): </span></td>
+			</tr>
+			<tr>
+				<td>권한1</td>
+				<td><span th:text="${#authentication.principal.authorities}">사용자
+						권한: </span></td>
+			</tr>
+			<tr>
+				<td>권한2</td>
+				<td><span th:text="${#authentication.principal.auth}">사용자
+						권한: </span></td>
+			</tr>
+			<tr>
+				<td>성별</td>
+				<td><span th:text="${#authentication.principal.gender}">성별</span></td>
+			</tr>
+			<tr>
+				<td>나이</td>
+				<td><span th:text="${#authentication.principal.age}">나이</span></td>
+			</tr>
+			<tr>
+				<td>이름</td>
+				<td><span th:text="${#authentication.principal.name}">나이</span></td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td><span th:text="${#authentication.principal.email}">email</span></td>
+			</tr>
+		</table>
+	</div>
+    
