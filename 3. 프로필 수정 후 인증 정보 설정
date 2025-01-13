@@ -1,0 +1,5 @@
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member, member.getPassword(), member.getAuthorities());
+SecurityContextHolder.getContext().setAuthentication(authentication);
